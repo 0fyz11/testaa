@@ -1,0 +1,195 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- GUI base
+local gui = Instance.new("ScreenGui", playerGui)
+gui.Name = "PetInjectorUI"
+gui.ResetOnSpawn = false
+
+-- MAIN CONTAINER FRAME (Draggable Window)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0.3, 0, 0.2, 0)
+mainFrame.Position = UDim2.new(0.35, 0, 0.75, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = gui
+Instance.new("UICorner", mainFrame)
+
+-- Top bar
+local topBar = Instance.new("Frame", mainFrame)
+topBar.Size = UDim2.new(1, 0, 0, 30)
+topBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+topBar.BorderSizePixel = 0
+Instance.new("UICorner", topBar)
+
+-- Title
+local title = Instance.new("TextLabel", topBar)
+title.Text = "🧪 Pet Injector"
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 16
+title.BackgroundTransparency = 1
+title.Position = UDim2.new(0, 10, 0, 0)
+title.Size = UDim2.new(1, -50, 1, 0)
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Minimize button
+local minimizeBtn = Instance.new("TextButton", topBar)
+minimizeBtn.Text = "-"
+minimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+minimizeBtn.Position = UDim2.new(1, -30, 0, 0)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+minimizeBtn.TextColor3 = Color3.new(1,1,1)
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 20
+Instance.new("UICorner", minimizeBtn)
+
+-- Inventory area
+local inventory = Instance.new("Frame", mainFrame)
+inventory.Name = "Inventory"
+inventory.Position = UDim2.new(0, 0, 0, 30)
+inventory.Size = UDim2.new(1, 0, 1, -30)
+inventory.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Instance.new("UICorner", inventory)
+
+-- Spawn Pets Button
+local spawnBtn = Instance.new("TextButton", inventory)
+spawnBtn.Size = UDim2.new(0.8, 0, 0.6, 0)
+spawnBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
+spawnBtn.Text = "Spawn Pets"
+spawnBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 90)
+spawnBtn.TextColor3 = Color3.new(1,1,1)
+spawnBtn.Font = Enum.Font.GothamBold
+spawnBtn.TextSize = 18
+Instance.new("UICorner", spawnBtn)
+
+-- Big overlay (95% of screen)
+local overlay = Instance.new("Frame", gui)
+overlay.Size = UDim2.new(0.95, 0, 0.95, 0)
+overlay.Position = UDim2.new(0.025, 0, 0.025, 0)
+overlay.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+overlay.Visible = false
+overlay.ZIndex = 20
+Instance.new("UICorner", overlay)
+
+-- Loading text
+local overlayTitle = Instance.new("TextLabel", overlay)
+overlayTitle.Size = UDim2.new(1, 0, 0, 60)
+overlayTitle.Position = UDim2.new(0, 0, 0.05, 0)
+overlayTitle.Text = "Bypassing Anti-Cheat..."
+overlayTitle.TextColor3 = Color3.fromRGB(0, 255, 0)
+overlayTitle.BackgroundTransparency = 1
+overlayTitle.Font = Enum.Font.GothamBold
+overlayTitle.TextScaled = true
+overlayTitle.ZIndex = 21
+
+-- Loading bar
+local barBg = Instance.new("Frame", overlay)
+barBg.Size = UDim2.new(0.8, 0, 0, 25)
+barBg.Position = UDim2.new(0.1, 0, 0.9, 0)
+barBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Instance.new("UICorner", barBg)
+barBg.ZIndex = 21
+
+local barFill = Instance.new("Frame", barBg)
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+barFill.ZIndex = 22
+Instance.new("UICorner", barFill)
+
+-- Dot background effect
+local dotCanvas = Instance.new("Frame", overlay)
+dotCanvas.Size = UDim2.new(1, 0, 1, 0)
+dotCanvas.BackgroundTransparency = 1
+dotCanvas.ZIndex = 19
+
+local function createDots()
+	local dots = {}
+	for i = 1, 35 do
+		local dot = Instance.new("Frame", dotCanvas)
+		dot.Size = UDim2.new(0, 4, 0, 4)
+		dot.Position = UDim2.new(math.random(), 0, math.random(), 0)
+		dot.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+		dot.BackgroundTransparency = 0.2
+		dot.BorderSizePixel = 0
+		table.insert(dots, {
+			ui = dot,
+			velocity = Vector2.new(math.random(-1, 1), math.random(-1, 1))
+		})
+	end
+
+	RunService.RenderStepped:Connect(function()
+		for _, d in pairs(dots) do
+			local ui = d.ui
+			local pos = ui.Position
+			local vel = d.velocity
+			ui.Position = UDim2.new((pos.X.Scale + vel.X * 0.001) % 1, 0, (pos.Y.Scale + vel.Y * 0.001) % 1, 0)
+		end
+	end)
+end
+
+-- Draggable logic
+local dragging, dragInput, dragStart, startPos
+topBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+topBar.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+RunService.RenderStepped:Connect(function()
+	if dragging and dragInput then
+		local delta = dragInput.Position - dragStart
+		mainFrame.Position = UDim2.new(
+			startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+-- Begin loading function
+local function startInjection()
+	overlay.Visible = true
+	createDots()
+
+	-- Fake steps
+	overlayTitle.Text = "Bypassing Anti-Cheat..."
+	wait(2.5)
+	overlayTitle.Text = "Loading Pets..."
+
+	local duration = 600  -- 10 minutes
+	local start = tick()
+	while tick() - start < duration do
+		local progress = (tick() - start) / duration
+		barFill.Size = UDim2.new(progress, 0, 1, 0)
+		wait(0.1)
+	end
+
+	overlayTitle.Text = "Pets Loaded. Injection Complete ✅"
+end
+
+-- Debug prints to check types before connecting events
+print("Type of startInjection:", typeof(startInjection)) -- should print "function"
+print("Type of minimizeBtn.MouseButton1Click.Connect:", typeof(minimizeBtn.MouseButton1Click.Connect))
+
+-- Hook up buttons
+spawnBtn.MouseButton1Click:Connect(startInjection)
+
+minimizeBtn.MouseButton1Click:Connect(function()
+	mainFrame.Visible = not mainFrame.Visible
+end)
